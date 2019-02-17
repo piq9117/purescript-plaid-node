@@ -17,6 +17,7 @@ import Data.Maybe (Maybe)
 import Data.MediaType (MediaType(..))
 import Effect.Aff (Aff)
 import Prelude (class Show, ($), show, (<>))
+import Plaid.Types
 
 type Options =
   { version :: String }
@@ -34,31 +35,23 @@ instance showEnvironments :: Show Environments where
 data PlaidClient = PlaidClient
   { client_id :: String
   , secret :: String
-  , public_token :: String
   , env :: Environments
-  , access_token :: String
   }
 
 instance showPlaid :: Show PlaidClient where
   show (PlaidClient { client_id
                    , secret
-                   , public_token
                    , env
-                   , access_token
                    }) = show $
     { client_id: client_id
     , secret: secret
-    , public_token: public_token
     , env: (show env)
-    , access_token
     }
 
 createPlaidClient
   :: { client_id :: String
      , secret :: String
-     , public_token :: String
      , env :: Environments
-     , access_token :: String
      }
   -> PlaidClient
 createPlaidClient attr = PlaidClient attr
@@ -68,7 +61,7 @@ apiHosts env =
   "https://" <> (show env) <> ".plaid.com"
 
 plaidRequest
-  :: String
+  :: Path
   -> Environments
   -> Maybe RequestBody
   -> Aff (Response (Either ResponseFormatError Json))
