@@ -14,16 +14,21 @@ import Foreign.Object (empty, insert)
 import Plaid (PlaidClient(..), plaidRequest)
 import Prelude (($), (<<<))
 
-reqBody :: PlaidClient -> Json
-reqBody (PlaidClient { client_id, secret, public_token }) =
-  encodeJson <<<
-  insert "secret" secret <<<
-  insert "public_token" public_token <<<
-  insert "client_id" client_id $ empty
-
 -- | exchanges `public_token` for an `access_token`
 exchangePublicToken
   :: PlaidClient
   -> Aff (Response (Either ResponseFormatError Json))
 exchangePublicToken pd@(PlaidClient { client_id, secret, public_token, env }) =
-  plaidRequest "/item/public_token/exchange" env (Just <<< json <<< reqBody $ pd)
+  plaidRequest "/item/public_token/exchange" env (Just <<< json $ exchangeReqBody)
+  where exchangeReqBody =
+          encodeJson <<<
+          insert "secret" secret <<<
+          insert "public_token" public_token <<<
+          insert "client_id" client_id $ empty
+
+-- | Create a public_token to use with Plaid Link's update mode.
+createPublicToken :: PlaidClient -> Aff (Response (Either ResponseFormatError Json))
+createPublicToken pd@(PlaidClient {access_token, env})=
+  plaidRequest "/item/public_token/create" env (Just <<< json $ reqBody)
+  where reqBody = encodeJson <<<
+        insert "access_token" access_token $ empty

@@ -36,6 +36,7 @@ data PlaidClient = PlaidClient
   , secret :: String
   , public_token :: String
   , env :: Environments
+  , access_token :: String
   }
 
 instance showPlaid :: Show PlaidClient where
@@ -43,11 +44,13 @@ instance showPlaid :: Show PlaidClient where
                    , secret
                    , public_token
                    , env
+                   , access_token
                    }) = show $
     { client_id: client_id
     , secret: secret
     , public_token: public_token
     , env: (show env)
+    , access_token
     }
 
 createPlaidClient
@@ -55,6 +58,7 @@ createPlaidClient
      , secret :: String
      , public_token :: String
      , env :: Environments
+     , access_token :: String
      }
   -> PlaidClient
 createPlaidClient attr = PlaidClient attr
