@@ -13,7 +13,7 @@ import Effect.Aff (Aff)
 import Affjax (Response)
 import Data.Either (Either)
 
--- | Retrieve Accounts
+-- | Pull the accounts associated with the Item.
 getAccounts
   :: PlaidClient
   -> AccessToken
