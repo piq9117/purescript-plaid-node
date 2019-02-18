@@ -15,7 +15,8 @@
     "purescript-affjax": "^7.0.2",
     "purescript-http-methods": "^4.0.2",
     "purescript-aff": "^5.1.0",
-    "purescript-argonaut-core": "^4.0.1"
+    "purescript-argonaut-core": "^4.0.1",
+    "purescript-argonaut-codecs": "^5.1.2"
   },
   "devDependencies": {
     "purescript-psci-support": "^4.0.0",
