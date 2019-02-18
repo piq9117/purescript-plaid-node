@@ -1,7 +1,6 @@
 module Plaid.ItemManagement where
 
-import Plaid.Types
-
+import Plaid.Types (AccessToken)
 import Plaid (PlaidClient(..), plaidRequest)
 import Data.Argonaut.Encode.Class (encodeJson)
 import Prelude((<<<), ($))
@@ -23,4 +22,6 @@ getAccounts (PlaidClient { env, client_id, secret }) accessToken =
   plaidRequest "/accounts/get" env reqBody
   where reqBody =
           Just <<< json $ encodeJson <<<
+          insert "secret" secret <<<
+          insert "client_id" client_id <<<
           insert "access_token" accessToken $ empty

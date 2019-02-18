@@ -57,7 +57,7 @@ createPlaidClient
 createPlaidClient attr = PlaidClient attr
 
 apiHosts :: Environments -> String
-apiHosts env = 
+apiHosts env =
   "https://" <> (show env) <> ".plaid.com"
 
 plaidRequest

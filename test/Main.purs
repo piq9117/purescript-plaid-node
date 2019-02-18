@@ -1,8 +1,8 @@
 module Test.Main where
 
 import Prelude (Unit)
-import Effect.Console (log)
 import Effect (Effect)
+import Effect.Console (log)
 
 main :: Effect Unit
-main = log "Text"
+main = log "test"
