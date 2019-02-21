@@ -39,10 +39,7 @@ data PlaidClient = PlaidClient
   }
 
 instance showPlaid :: Show PlaidClient where
-  show (PlaidClient { client_id
-                   , secret
-                   , env
-                   }) = show $
+  show (PlaidClient { client_id , secret , env }) = show $
     { client_id: client_id
     , secret: secret
     , env: (show env)

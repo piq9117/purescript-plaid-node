@@ -50,3 +50,21 @@ updateWebHook (PlaidClient { client_id, secret, env }) accessToken webhook =
           insert "client_id" client_id <<<
           insert "access_token" accessToken <<<
           insert "webhook" webhook $ empty
+
+-- | Rotate Access Token.
+-- | By default, the `access_token` associated with an `Item` does not expire
+-- | and should be stored in a persistent, secure manner.
+-- | This function can be used to rotate the `access_token` associated with an
+-- | `Item`. It returns a new `access_token` and immediately invalidates the
+-- | previous `access_token`.
+invalidateAccesToken
+  :: PlaidClient
+  -> AccessToken
+  -> Aff (Response (Either ResponseFormatError Json))
+invalidateAccesToken (PlaidClient { client_id, secret, env }) accessToken =
+  plaidRequest "/item/access_token/invalidate" env reqBody
+  where reqBody =
+          Just <<< json $ encodeJson <<<
+          insert "client_id" client_id <<<
+          insert "secret" secret <<<
+          insert "access_token" accessToken $ empty
