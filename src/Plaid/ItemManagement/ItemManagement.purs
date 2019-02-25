@@ -68,3 +68,19 @@ invalidateAccesToken (PlaidClient { client_id, secret, env }) accessToken =
           insert "client_id" client_id <<<
           insert "secret" secret <<<
           insert "access_token" accessToken $ empty
+
+-- | Remove an Item
+-- | Once an item is removed, the `access_token` associated with the `Item` is
+-- | no longer valid and cannote be used to access any data that was associated
+-- | with the `Item`.
+removeItem
+  :: PlaidClient
+  -> AccessToken
+  -> Aff (Response (Either ResponseFormatError Json))
+removeItem (PlaidClient { client_id, secret, env }) accessToken =
+  plaidRequest "/item/remove" env reqBody
+  where reqBody =
+          Just <<< json $ encodeJson <<<
+          insert "client_id" client_id <<<
+          insert "secret" secret <<<
+          insert "access_token" accessToken $ empty
