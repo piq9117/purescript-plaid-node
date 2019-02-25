@@ -1,6 +1,6 @@
 module Plaid.ItemManagement where
 
-import Affjax (Response, ResponseFormatError(..))
+import Affjax (Response)
 import Affjax.RequestBody (json)
 import Affjax.ResponseFormat (ResponseFormatError)
 import Data.Argonaut.Core (Json)
