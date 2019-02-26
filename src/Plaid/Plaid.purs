@@ -1,10 +1,12 @@
 module Plaid
        ( PlaidClient (..)
-       , Options
+       , PlaidOptions
        , Environments (..)
-       , createPlaidClient
+       , defaultPlaidClient
        , plaidRequest
        ) where
+
+import Plaid.Types
 
 import Affjax (Response, ResponseFormatError, request, defaultRequest)
 import Affjax.RequestBody (RequestBody)
@@ -17,10 +19,11 @@ import Data.Maybe (Maybe)
 import Data.MediaType (MediaType(..))
 import Effect.Aff (Aff)
 import Prelude (class Show, ($), show, (<>))
-import Plaid.Types
 
-type Options =
-  { version :: String }
+type PlaidOptions =
+  { version :: Maybe String
+  , account_ids :: Array String
+  }
 
 data Environments
   = Sandbox
@@ -45,13 +48,12 @@ instance showPlaid :: Show PlaidClient where
     , env: (show env)
     }
 
-createPlaidClient
-  :: { client_id :: String
-     , secret :: String
-     , env :: Environments
-     }
-  -> PlaidClient
-createPlaidClient attr = PlaidClient attr
+defaultPlaidClient :: PlaidClient
+defaultPlaidClient = PlaidClient
+  { client_id: ""
+  , secret: ""
+  , env: Sandbox
+  }
 
 apiHosts :: Environments -> String
 apiHosts env =
