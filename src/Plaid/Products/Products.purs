@@ -18,7 +18,6 @@ import Prelude ((<<<), ($))
 newtype ReqBody = ReqBody
   { client_id :: String
   , secret :: String
-  , options :: PlaidOptions
   , access_token :: String
   }
 
@@ -26,35 +25,25 @@ instance encodeReqBody :: EncodeJson ReqBody where
   encodeJson (ReqBody req)
     = "client_id" := req.client_id
     ~> "secret" := req.secret
-    ~> "options" := req.options
     ~> "access_token" := req.access_token
+
 reqBody
   :: String
   -> String
   -> AccessToken
-  -> Maybe PlaidOptions
   -> ReqBody
-reqBody client_id secret accessToken mOps =
-  case mOps of
-    Nothing -> ReqBody
-      { client_id: client_id
-      , secret: secret
-      , options: { version: Nothing, account_ids: [] }
-      , access_token: accessToken
-      }
-    Just ops -> ReqBody
-      { client_id: client_id
-      , secret: secret
-      , options: ops
-      , access_token: accessToken
-      }
+reqBody client_id secret accessToken =
+  ReqBody
+  { client_id: client_id
+  , secret: secret
+  , access_token: accessToken
+  }
 
 -- | Retrieve Auth Request
 getAuth
   :: PlaidClient
   -> AccessToken
-  -> Maybe PlaidOptions
   -> Aff (Response (Either ResponseFormatError Json))
-getAuth pd accessToken mOps =
+getAuth pd accessToken =
   plaidRequest "/auth/get" pd.env
-  (Just <<< json <<< encodeJson $ reqBody pd.client_id pd.secret accessToken mOps)
+  (Just <<< json <<< encodeJson $ reqBody pd.client_id pd.secret accessToken)
