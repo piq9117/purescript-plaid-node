@@ -15,6 +15,7 @@ import Foreign.Object (empty, insert)
 import Plaid (plaidRequest)
 import Prelude (($), (<<<))
 import Plaid.Types
+
 -- | exchanges `public_token` for an API `access_token`.
 exchangePublicToken
   :: PlaidClient

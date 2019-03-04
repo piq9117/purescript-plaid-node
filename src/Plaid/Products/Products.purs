@@ -6,7 +6,7 @@ import Plaid.Types
 import Affjax (Response)
 import Affjax.RequestBody (json)
 import Affjax.ResponseFormat (ResponseFormatError)
-import Data.Argonaut.Core (Json)
+import Data.Argonaut.Core (Json, jsonEmptyObject)
 import Data.Argonaut.Encode.Class (class EncodeJson, encodeJson)
 import Data.Argonaut.Encode.Combinators ((:=), (~>))
 import Data.Either (Either)
@@ -22,28 +22,30 @@ newtype ReqBody = ReqBody
   }
 
 instance encodeReqBody :: EncodeJson ReqBody where
-  encodeJson (ReqBody req)
-    = "client_id" := req.client_id
-    ~> "secret" := req.secret
-    ~> "access_token" := req.access_token
+  encodeJson (ReqBody {client_id, secret, access_token})
+    = "client_id" := client_id
+    ~> "secret" := secret
+    ~> "access_token" := access_token
+    ~> jsonEmptyObject
 
 reqBody
   :: String
   -> String
   -> AccessToken
   -> ReqBody
-reqBody client_id secret accessToken =
+reqBody client_id secret aToken =
   ReqBody
   { client_id: client_id
   , secret: secret
-  , access_token: accessToken
+  , access_token: aToken
   }
 
 -- | Retrieve Auth Request
-getAuth
-  :: PlaidClient
-  -> AccessToken
-  -> Aff (Response (Either ResponseFormatError Json))
-getAuth pd accessToken =
-  plaidRequest "/auth/get" pd.env
-  (Just <<< json <<< encodeJson $ reqBody pd.client_id pd.secret accessToken)
+-- getAuth
+--   :: PlaidClient
+--   -> AccessToken
+  -- -> Aff (Response (Either ResponseFormatError Json))
+  -- -> Maybe RequestBody
+getAuth pd aToken = Just $ json $ encodeJson $ reqBody pd.client_id pd.secret aToken
+  -- plaidRequest "/auth/get" pd.env
+  --   (Just <<< json <<< encodeJson <<< reqBody pd.client_id pd.secret $ aToken)
