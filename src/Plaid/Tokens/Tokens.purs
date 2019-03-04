@@ -12,7 +12,7 @@ import Data.Either (Either)
 import Data.Maybe (Maybe(..))
 import Effect.Aff (Aff)
 import Foreign.Object (empty, insert)
-import Plaid (PlaidClient(..), plaidRequest)
+import Plaid (plaidRequest)
 import Prelude (($), (<<<))
 import Plaid.Types
 -- | exchanges `public_token` for an API `access_token`.
@@ -20,20 +20,22 @@ exchangePublicToken
   :: PlaidClient
   -> PublicToken
   -> Aff (Response (Either ResponseFormatError Json))
-exchangePublicToken pd@(PlaidClient { client_id, secret, env }) public_token =
-  plaidRequest "/item/public_token/exchange" env reqBody
+exchangePublicToken pd public_token =
+  plaidRequest "/item/public_token/exchange" pd.env reqBody
   where reqBody = Just <<< json $
           encodeJson <<<
-          insert "secret" secret <<<
+          insert "secret" pd.secret <<<
           insert "public_token" public_token <<<
-          insert "client_id" client_id $ empty
+          insert "client_id" pd.client_id $ empty
 
 -- | Create a public_token.
 createPublicToken
   :: PlaidClient
   -> AccessToken
   -> Aff (Response (Either ResponseFormatError Json))
-createPublicToken pd@(PlaidClient { env }) accessToken =
-  plaidRequest "/item/public_token/create" env reqBody
+createPublicToken pd accessToken =
+  plaidRequest "/item/public_token/create" pd.env reqBody
   where reqBody = Just <<< json $ encodeJson <<<
+        insert "client_id" pd.client_id <<<
+        insert "secret" pd.secret <<<
         insert "access_token" accessToken $ empty

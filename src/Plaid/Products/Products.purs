@@ -12,7 +12,7 @@ import Data.Argonaut.Encode.Combinators ((:=), (~>))
 import Data.Either (Either)
 import Data.Maybe (Maybe(..))
 import Effect.Aff (Aff)
-import Plaid (PlaidClient(..), PlaidOptions, plaidRequest)
+import Plaid (plaidRequest)
 import Prelude ((<<<), ($))
 
 newtype ReqBody = ReqBody
@@ -55,6 +55,6 @@ getAuth
   -> AccessToken
   -> Maybe PlaidOptions
   -> Aff (Response (Either ResponseFormatError Json))
-getAuth (PlaidClient { client_id, secret, env }) accessToken mOps =
-  plaidRequest "/auth/get" env
-    (Just <<< json <<< encodeJson $ reqBody client_id secret accessToken mOps)
+getAuth pd accessToken mOps =
+  plaidRequest "/auth/get" pd.env
+  (Just <<< json <<< encodeJson $ reqBody pd.client_id pd.secret accessToken mOps)
