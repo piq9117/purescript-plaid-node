@@ -13,7 +13,7 @@ import Data.Either (Either)
 import Data.Maybe (Maybe(..))
 import Effect.Aff (Aff)
 import Plaid (plaidRequest)
-import Prelude ((<<<), ($))
+import Prelude (($))
 
 newtype ReqBody = ReqBody
   { client_id :: String
@@ -41,11 +41,10 @@ reqBody client_id secret aToken =
   }
 
 -- | Retrieve Auth Request
--- getAuth
---   :: PlaidClient
---   -> AccessToken
-  -- -> Aff (Response (Either ResponseFormatError Json))
-  -- -> Maybe RequestBody
-getAuth pd aToken = Just $ json $ encodeJson $ reqBody pd.client_id pd.secret aToken
-  -- plaidRequest "/auth/get" pd.env
-  --   (Just <<< json <<< encodeJson <<< reqBody pd.client_id pd.secret $ aToken)
+getAuth
+  :: PlaidClient
+  -> AccessToken
+  -> Aff (Response (Either ResponseFormatError Json))
+getAuth pd aToken =
+  plaidRequest "/auth/get" pd.env
+   (Just $ json $ encodeJson $ reqBody pd.client_id pd.secret aToken)
