@@ -9,12 +9,13 @@ import Affjax.ResponseFormat (ResponseFormatError)
 import Data.Argonaut.Core (Json, jsonEmptyObject)
 import Data.Argonaut.Encode.Class (class EncodeJson, encodeJson)
 import Data.Argonaut.Encode.Combinators ((:=), (~>))
-import Data.Date (Date)
-import Data.Either (Either)
+import Data.DateTime (DateTime)
+import Data.Either (Either, either)
+import Data.Formatter.DateTime (formatDateTime)
 import Data.Maybe (Maybe(..))
 import Effect.Aff (Aff)
 import Plaid (plaidRequest)
-import Prelude (($), show)
+import Prelude (($), identity)
 
 newtype ReqBody = ReqBody
   { client_id :: String
@@ -50,8 +51,8 @@ getAuth pd aToken =
   plaidRequest "/auth/get" pd.env
    (Just $ json $ encodeJson $ reqBody pd.client_id pd.secret aToken)
 
-type StartDate = Date
-type EndDate = Date
+type StartDate = DateTime
+type EndDate = DateTime
 
 newtype TransReqBody = TransReqBody
   { client_id :: String
@@ -70,6 +71,9 @@ instance encodeTransReqBody :: EncodeJson TransReqBody where
     ~> "end_date" := req.end_date
     ~> jsonEmptyObject
 
+formatDate :: DateTime -> Either String String
+formatDate = formatDateTime "YYYY-MM-DD"
+
 transReqBody
   :: PlaidClient
   -> AccessToken
@@ -81,8 +85,8 @@ transReqBody pd aToken sDate eDate =
     { client_id: pd.client_id
     , secret: pd.secret
     , access_token: aToken
-    , start_date: (show sDate)
-    , end_date: (show eDate)
+    , start_date: (either identity identity $ formatDate sDate)
+    , end_date: (either identity identity $ formatDate eDate)
     }
 
 -- | Retrieve Transactions Request
