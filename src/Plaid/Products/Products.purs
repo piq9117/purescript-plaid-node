@@ -190,22 +190,29 @@ type AccessReportToken = String
 data RefreshAssetReportReqBody = RefreshAssetReportReqBody
   { days_requested :: Int
   , asset_report_token :: String
+  , client_id :: String
+  , secret :: String
   }
 
 instance encodeRefAsstRepReqBody :: EncodeJson RefreshAssetReportReqBody where
-  encodeJson (RefreshAssetReportReqBody { days_requested, asset_report_token })
+  encodeJson (RefreshAssetReportReqBody { days_requested, asset_report_token, client_id, secret })
     = "days_requested" := days_requested
     ~> "asset_report_token" := asset_report_token
+    ~> "client_id" := client_id
+    ~> "secret" := secret
     ~> jsonEmptyObject
 
 refAsstReqBody
-  :: AccessReportToken
+  :: PlaidClient
+  -> AccessReportToken
   -> DaysRequested
   -> RefreshAssetReportReqBody
-refAsstReqBody art dr = 
+refAsstReqBody pd art dr = 
   RefreshAssetReportReqBody
   { asset_report_token: art
   , days_requested: dr
+  , client_id: pd.client_id
+  , secret: pd.secret
   }
 
 -- | Refresh an Asset Report
@@ -216,8 +223,5 @@ refreshAssetReport
   -> Aff (Response (Either ResponseFormatError Json))
 refreshAssetReport pd art dr =
   plaidRequest "/asset_report/refresh" pd.env
-    (Just $ json $ encodeJson $ refAsstReqBody art dr)
+    (Just $ json $ encodeJson $ refAsstReqBody pd art dr)
 
-     
-
-  
