@@ -123,3 +123,15 @@ getIdentity
 getIdentity pd atoken =
   plaidRequest "/identity/get" pd.env
     (Just $ json $ encodeJson $ reqBody pd.client_id pd.secret atoken)
+
+-- | Retrieve Income Request
+-- | Allows you to retrieve information pertaining to an `Item`'s income.
+-- | In addition to the annual income, detailed information will be provided
+-- | for each contributing income stream (or job.)
+getIncome
+  :: PlaidClient
+  -> AccessToken
+  -> Aff (Response (Either ResponseFormatError Json))
+getIncome plaidClient pd atoken =
+  plaidRequest "/income/get" pd.env
+    (Just $ json $ encodeJson $ reqBody pd.client_id pd.secret atoken)
