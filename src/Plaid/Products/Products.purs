@@ -1,7 +1,12 @@
 -- | Item Product Access
-module Plaid.Products where
-
-import Plaid.Types (AccessToken, PlaidClient)
+module Plaid.Products
+       ( getAuth
+       , getTransactions
+       , getBalance
+       , getIdentity
+       , getIncome
+       , createAssetReport
+       ) where
 
 import Affjax (Response)
 import Affjax.RequestBody (json)
@@ -15,6 +20,7 @@ import Data.Formatter.DateTime (formatDateTime)
 import Data.Maybe (Maybe(..))
 import Effect.Aff (Aff)
 import Plaid (plaidRequest)
+import Plaid.Types (PlaidClient, AccessToken)
 import Prelude (($), identity)
 
 newtype ReqBody = ReqBody
@@ -135,3 +141,44 @@ getIncome
 getIncome pd atoken =
   plaidRequest "/income/get" pd.env
     (Just $ json $ encodeJson $ reqBody pd.client_id pd.secret atoken)
+
+data CreateAssetReportReqBody = CreateAssetReportReqBody
+  { client_id :: String
+  , secret :: String
+  , access_tokens :: Array String
+  , days_requested :: Int
+  }
+
+type DaysRequested = Int
+
+instance encodeCreateAssetRepReqBody :: EncodeJson CreateAssetReportReqBody where
+  encodeJson (CreateAssetReportReqBody { client_id, secret, access_tokens, days_requested })
+    = "client_id" := client_id
+    ~> "secret" := secret
+    ~> "access_tokens" := access_tokens
+    ~> "days_requested" := days_requested
+    ~> jsonEmptyObject
+    
+caReqBody
+  :: String
+  -> String
+  -> Array String
+  -> DaysRequested
+  -> CreateAssetReportReqBody
+caReqBody clientId secret atokens dr = 
+  CreateAssetReportReqBody
+  { client_id: clientId
+  , secret: secret
+  , access_tokens: atokens
+  , days_requested: dr
+  }
+
+-- | Create An Asset Report
+createAssetReport
+  :: PlaidClient
+  -> Array AccessToken
+  -> DaysRequested
+  -> Aff (Response (Either ResponseFormatError Json))
+createAssetReport pd atokens dr =
+  plaidRequest "/asset_report/create" pd.env
+    (Just $ json $ encodeJson $ caReqBody pd.client_id pd.secret atokens dr)
