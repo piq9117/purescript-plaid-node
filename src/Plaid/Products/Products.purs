@@ -112,3 +112,11 @@ getBalance
 getBalance pd atoken =
   plaidRequest "/accounts/balance/get" pd.env
     (Just $ json $ encodeJson $ reqBody pd.client_id pd.secret atoken)
+
+getIdentity
+  :: PlaidClient
+  -> AccessToken
+  -> Aff (Response (Either ResponseFormatError Json))
+getIdentity pd atoken =
+  plaidRequest "/identity/get" pd.env
+    (Just $ json $ encodeJson $ reqBody pd.client_id pd.secret atoken)
