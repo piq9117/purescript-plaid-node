@@ -1,9 +1,9 @@
 -- | Item Product Access
 module Plaid.Products where
 
-import Plaid.Types
+import Plaid.Types (AccessToken, PlaidClient)
 
-import Affjax 
+import Affjax (Response)
 import Affjax.RequestBody (json)
 import Affjax.ResponseFormat (ResponseFormatError)
 import Data.Argonaut.Core (Json, jsonEmptyObject)
