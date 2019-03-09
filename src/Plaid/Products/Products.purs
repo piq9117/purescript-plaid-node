@@ -173,7 +173,7 @@ caReqBody clientId secret atokens dr =
   , days_requested: dr
   }
 
--- | Create An Asset Report
+-- | Create an Asset Report
 createAssetReport
   :: PlaidClient
   -> Array AccessToken
@@ -182,3 +182,41 @@ createAssetReport
 createAssetReport pd atokens dr =
   plaidRequest "/asset_report/create" pd.env
     (Just $ json $ encodeJson $ caReqBody pd.client_id pd.secret atokens dr)
+
+-- | Token obtained from creating an asset report
+type AccessReportToken = String
+
+data RefreshAssetReportReqBody = RefreshAssetReportReqBody
+  { days_requested :: Int
+  , asset_report_token :: String
+  }
+
+instance encodeRefAsstRepReqBody :: EncodeJson RefreshAssetReportReqBody where
+  encodeJson (RefreshAssetReportReqBody { days_requested, asset_report_token })
+    = "days_requested" := days_requested
+    ~> "asset_report_token" := asset_report_token
+    ~> jsonEmptyObject
+
+refAsstReqBody
+  :: AccessReportToken
+  -> DaysRequested
+  -> RefreshAssetReportReqBody
+refAsstReqBody art dr = 
+  RefreshAssetReportReqBody
+  { asset_report_token: art
+  , days_requested: dr
+  }
+
+-- | Refresh an Asset Report
+refreshAssetReport
+  :: PlaidClient
+  -> AccessReportToken
+  -> DaysRequested
+  -> Aff (Response (Either ResponseFormatError Json))
+refreshAssetReport pd art dr =
+  plaidRequest "/assert_report/refresh" pd.env
+    (Just $ json $ encodeJson $ refAsstReqBody art dr)
+
+     
+
+  
