@@ -3,7 +3,7 @@ module Plaid.Products where
 
 import Plaid.Types
 
-import Affjax (Response)
+import Affjax (Response, ResponseFormatError(..))
 import Affjax.RequestBody (json)
 import Affjax.ResponseFormat (ResponseFormatError)
 import Data.Argonaut.Core (Json, jsonEmptyObject)
@@ -99,3 +99,14 @@ getTransactions
 getTransactions pd aToken sDate eDate =
   plaidRequest "/transactions/get" pd.env
    (Just $ json $ encodeJson $ transReqBody pd aToken sDate eDate)
+
+-- | Retrieve Balance Requests
+-- | Returns the real-time balnace for each of an `Item's` accounts.
+-- | It can be used for existing `Items` added via any of Plaid's products.
+getBalance
+  :: PlaidClient
+  -> AccessToken
+  -> Aff (Response (Either ResponseFormatError Json))
+getBalance pd atoken =
+  plaidRequest "/accounts/balance/get" pd.env
+    (Just $ json $ encodeJson $ reqBody pd.client_id pd.secret atoken)
