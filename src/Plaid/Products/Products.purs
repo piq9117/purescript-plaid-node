@@ -132,6 +132,6 @@ getIncome
   :: PlaidClient
   -> AccessToken
   -> Aff (Response (Either ResponseFormatError Json))
-getIncome plaidClient pd atoken =
+getIncome pd atoken =
   plaidRequest "/income/get" pd.env
     (Just $ json $ encodeJson $ reqBody pd.client_id pd.secret atoken)
