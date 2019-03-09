@@ -3,7 +3,7 @@ module Plaid.Products where
 
 import Plaid.Types
 
-import Affjax (Response, ResponseFormatError(..))
+import Affjax 
 import Affjax.RequestBody (json)
 import Affjax.ResponseFormat (ResponseFormatError)
 import Data.Argonaut.Core (Json, jsonEmptyObject)
@@ -90,7 +90,7 @@ transReqBody pd aToken sDate eDate =
     }
 
 -- | Retrieve Transactions Request
--- | Allows developers to receive user-authorized transaction data for credit
+-- | Allows you to receive user-authorized transaction data for credit
 -- | and depository-type accounts.
 getTransactions
   :: PlaidClient
@@ -113,6 +113,9 @@ getBalance pd atoken =
   plaidRequest "/accounts/balance/get" pd.env
     (Just $ json $ encodeJson $ reqBody pd.client_id pd.secret atoken)
 
+-- | Retrieve Identity Request
+-- | Allows you to retrieve various account holder information on file with the
+-- | financial institution, including names, emails, phone numbers, and addresses.
 getIdentity
   :: PlaidClient
   -> AccessToken
