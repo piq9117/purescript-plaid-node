@@ -90,6 +90,8 @@ transReqBody pd aToken sDate eDate =
     }
 
 -- | Retrieve Transactions Request
+-- | Allows developers to receive user-authorized transaction data for credit
+-- | and depository-type accounts.
 getTransactions
   :: PlaidClient
   -> AccessToken
