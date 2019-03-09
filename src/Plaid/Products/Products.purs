@@ -6,6 +6,7 @@ module Plaid.Products
        , getIdentity
        , getIncome
        , createAssetReport
+       , refreshAssetReport
        ) where
 
 import Affjax (Response)
@@ -214,7 +215,7 @@ refreshAssetReport
   -> DaysRequested
   -> Aff (Response (Either ResponseFormatError Json))
 refreshAssetReport pd art dr =
-  plaidRequest "/assert_report/refresh" pd.env
+  plaidRequest "/asset_report/refresh" pd.env
     (Just $ json $ encodeJson $ refAsstReqBody art dr)
 
      
