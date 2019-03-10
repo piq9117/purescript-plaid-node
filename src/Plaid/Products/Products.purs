@@ -242,6 +242,7 @@ instance encodeFiltAsstReqBody :: EncodeJson FilterAssetReqBody where
     ~> "secret" := secret
     ~> "asset_report_token" := asset_report_token
     ~> "account_ids_to_exclude" := account_ids_to_exclude
+    ~> jsonEmptyObject
 
 type AccountToExclude = String
 
