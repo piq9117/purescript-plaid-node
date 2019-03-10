@@ -228,3 +228,40 @@ refreshAssetReport pd art dr =
   plaidRequest "/asset_report/refresh" pd.env
     (Just $ json $ encodeJson $ refAsstReqBody pd art dr)
 
+data FilterAssetReqBody = FilterAssetReqBody
+  { client_id :: String
+  , secret :: String
+  , asset_report_token :: String
+  , account_ids_to_exclude :: Array String
+  }
+
+instance encodeFiltAsstReqBody :: EncodeJson FilterAssetReqBody where
+  encodeJson (FilterAssetReqBody { client_id, secret, asset_report_token, account_ids_to_exclude })
+    = "client_id" := client_id
+    ~> "secret" := secret
+    ~> "asset_report_token" := asset_report_token
+    ~> "account_ids_to_exclude" := account_ids_to_exclude
+
+type AccountToExclude = String
+
+filtAsstReqBody
+  :: PlaidClient
+  -> AccessReportToken
+  -> Array AccountToExclude
+  -> FilterAssetReqBody
+filtAsstReqBody pd art act =
+  FilterAssetReqBody
+  { client_id: pd.client_id
+  , secret: pd.secret
+  , account_ids_to_exclude: act
+  , asset_report_token: art
+  }
+
+filterAssetReport
+  :: PlaidClient
+  -> AccessReportToken
+  -> Array AccountToExclude
+  -> Aff (Response (Either ResponseFormatError Json))
+filterAssetReport pd art act =
+  plaidRequest "/asset_report/filter" pd.env
+    (Just $ json $ encodeJson $ filtAsstReqBody pd art act)
