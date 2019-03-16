@@ -8,6 +8,7 @@ module Plaid.Products
        , createAssetReport
        , refreshAssetReport
        , filterAssetReport
+       , getAssetReport
        ) where
 
 import Affjax (Response)
