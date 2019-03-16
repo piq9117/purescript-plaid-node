@@ -186,7 +186,7 @@ createAssetReport pd atokens dr =
     (Just $ json $ encodeJson $ caReqBody pd.client_id pd.secret atokens dr)
 
 -- | Token obtained from creating an asset report
-type AccessReportToken = String
+type AssetReportToken = String
 
 data RefAssetReportReqBody = RefAssetReportReqBody
   { days_requested :: Int
@@ -208,7 +208,7 @@ instance encodeRefAsstRepReqBody :: EncodeJson RefAssetReportReqBody where
 
 refAsstReqBody
   :: PlaidClient
-  -> AccessReportToken
+  -> AssetReportToken
   -> DaysRequested
   -> RefAssetReportReqBody
 refAsstReqBody pd art dr =
@@ -222,7 +222,7 @@ refAsstReqBody pd art dr =
 -- | Refresh an Asset Report
 refreshAssetReport
   :: PlaidClient
-  -> AccessReportToken
+  -> AssetReportToken
   -> DaysRequested
   -> Aff (Response (Either ResponseFormatError Json))
 refreshAssetReport pd art dr =
@@ -248,7 +248,7 @@ type AccountToExclude = String
 
 filtAsstReqBody
   :: PlaidClient
-  -> AccessReportToken
+  -> AssetReportToken
   -> Array AccountToExclude
   -> FilterAssetReqBody
 filtAsstReqBody pd art act =
@@ -261,9 +261,42 @@ filtAsstReqBody pd art act =
 
 filterAssetReport
   :: PlaidClient
-  -> AccessReportToken
+  -> AssetReportToken
   -> Array AccountToExclude
   -> Aff (Response (Either ResponseFormatError Json))
 filterAssetReport pd art act =
   plaidRequest "/asset_report/filter" pd.env
     (Just $ json $ encodeJson $ filtAsstReqBody pd art act)
+
+data GetAssetReportReqBody = GetAssetReportReqBody
+  { client_id :: String
+  , secret :: String
+  , asset_report_token :: String
+  }
+
+instance encodeGetAssetReportReqbody :: EncodeJson GetAssetReportReqBody where
+  encodeJson (GetAssetReportReqBody req)
+    =  "client_id" := req.client_id
+    ~> "secret" := req.secret
+    ~> "asset_report_token" := req.asset_report_token
+    ~> jsonEmptyObject
+
+getAsstReqBody
+  :: PlaidClient
+  -> AssetReportToken
+  -> GetAssetReportReqBody
+getAsstReqBody pd art =
+  GetAssetReportReqBody
+  { client_id: pd.client_id
+  , secret: pd.secret
+  , asset_report_token: art
+  }
+
+-- | Retrieve an Asset Report
+getAssetReport
+  :: PlaidClient
+  -> AssetReportToken
+  -> Aff (Response (Either ResponseFormatError Json))
+getAssetReport pd art =
+  plaidRequest "/asset_report/get" pd.env
+  (Just $ json $ encodeJson $ getAsstReqBody pd art)
