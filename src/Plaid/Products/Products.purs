@@ -9,6 +9,7 @@ module Plaid.Products
        , refreshAssetReport
        , filterAssetReport
        , getAssetReport
+       , getAssetPdfReport
        ) where
 
 import Affjax (Response)
