@@ -301,3 +301,11 @@ getAssetReport
 getAssetReport pd art =
   plaidRequest "/asset_report/get" pd.env
   (Just $ json $ encodeJson $ getAsstReqBody pd art)
+
+getAssetPdfReport
+  :: PlaidClient
+  -> AssetReportToken
+  -> Aff (Response (Either ResponseFormatError Json))
+getAssetPdfReport pd art =
+  plaidRequest "/asset_report/pdf/get" pd.env
+  (Just $ json $ encodeJson $ getAsstReqBody pd art)
