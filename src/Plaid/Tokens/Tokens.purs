@@ -36,7 +36,8 @@ createPublicToken
   -> Aff (Response (Either ResponseFormatError Json))
 createPublicToken pd accessToken =
   plaidRequest "/item/public_token/create" pd.env reqBody
-  where reqBody = Just <<< json $ encodeJson <<<
-        insert "client_id" pd.client_id <<<
-        insert "secret" pd.secret <<<
-        insert "access_token" accessToken $ empty
+  where
+    reqBody = Just <<< json $ encodeJson <<<
+              insert "client_id" pd.client_id <<<
+              insert "secret" pd.secret <<<
+              insert "access_token" accessToken $ empty
