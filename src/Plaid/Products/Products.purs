@@ -18,13 +18,12 @@ import Affjax.ResponseFormat (ResponseFormatError)
 import Data.Argonaut.Core (Json, jsonEmptyObject)
 import Data.Argonaut.Encode.Class (class EncodeJson, encodeJson)
 import Data.Argonaut.Encode.Combinators ((:=), (~>))
-import Data.DateTime (DateTime)
 import Data.Either (Either, either)
 import Data.Formatter.DateTime (formatDateTime)
 import Data.Maybe (Maybe(..))
 import Effect.Aff (Aff)
 import Plaid (plaidRequest)
-import Plaid.Types (PlaidClient, AccessToken)
+import Plaid.Types (PlaidClient, AccessToken, StartDate, EndDate)
 import Prelude (($), identity)
 
 newtype ReqBody = ReqBody
@@ -61,9 +60,6 @@ getAuth pd aToken =
   plaidRequest "/auth/get" pd.env
    (Just $ json $ encodeJson $ reqBody pd.client_id pd.secret aToken)
 
-type StartDate = DateTime
-type EndDate = DateTime
-
 newtype TransReqBody = TransReqBody
   { client_id :: String
   , secret :: String
@@ -81,8 +77,8 @@ instance encodeTransReqBody :: EncodeJson TransReqBody where
     ~> "end_date" := req.end_date
     ~> jsonEmptyObject
 
-formatDate :: DateTime -> Either String String
-formatDate = formatDateTime "YYYY-MM-DD"
+-- formatDate :: DateTime -> Either String String
+-- formatDate = formatDateTime "YYYY-MM-DD"
 
 transReqBody
   :: PlaidClient
@@ -98,6 +94,8 @@ transReqBody pd aToken sDate eDate =
     , start_date: (either identity identity $ formatDate sDate)
     , end_date: (either identity identity $ formatDate eDate)
     }
+    where
+      formatDate = formatDateTime "YYYY-MM-DD"
 
 -- | Retrieve Transactions Request
 -- | Allows you to receive user-authorized transaction data for credit

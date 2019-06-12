@@ -6,10 +6,13 @@ module Plaid.Types
        , PlaidClient
        , PlaidOptions
        , Environments (..)
+       , StartDate
+       , EndDate
        ) where
 
 import Data.Maybe (Maybe)
 import Prelude (class Show)
+import Data.DateTime (DateTime)
 
 type AccessToken = String
 type PublicToken = String
@@ -36,3 +39,6 @@ instance showEnvironments :: Show Environments where
   show Sandbox = "sandbox"
   show Development = "development"
   show Production = "production"
+
+type StartDate = DateTime
+type EndDate = DateTime
