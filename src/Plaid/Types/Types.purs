@@ -8,6 +8,8 @@ module Plaid.Types
        , Environments (..)
        , StartDate
        , EndDate
+       , AssetReportToken
+       , DaysRequested
        ) where
 
 import Data.Maybe (Maybe)
@@ -42,3 +44,8 @@ instance showEnvironments :: Show Environments where
 
 type StartDate = DateTime
 type EndDate = DateTime
+
+-- | Token obtained from creating an asset report
+type AssetReportToken = String
+
+type DaysRequested = Int

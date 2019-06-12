@@ -23,7 +23,7 @@ import Data.Formatter.DateTime (formatDateTime)
 import Data.Maybe (Maybe(..))
 import Effect.Aff (Aff)
 import Plaid (plaidRequest)
-import Plaid.Types (PlaidClient, AccessToken, StartDate, EndDate)
+import Plaid.Types (PlaidClient, AccessToken, StartDate, EndDate, AssetReportToken, DaysRequested)
 import Prelude (($), identity)
 
 newtype ReqBody = ReqBody
@@ -151,8 +151,6 @@ data CreateAssetReportReqBody = CreateAssetReportReqBody
   , days_requested :: Int
   }
 
-type DaysRequested = Int
-
 instance encodeCreateAssetRepReqBody :: EncodeJson CreateAssetReportReqBody where
   encodeJson (CreateAssetReportReqBody { client_id, secret, access_tokens, days_requested })
     = "client_id" := client_id
@@ -160,14 +158,14 @@ instance encodeCreateAssetRepReqBody :: EncodeJson CreateAssetReportReqBody wher
     ~> "access_tokens" := access_tokens
     ~> "days_requested" := days_requested
     ~> jsonEmptyObject
-    
+
 caReqBody
   :: String
   -> String
   -> Array String
   -> DaysRequested
   -> CreateAssetReportReqBody
-caReqBody clientId secret atokens dr = 
+caReqBody clientId secret atokens dr =
   CreateAssetReportReqBody
   { client_id: clientId
   , secret: secret
@@ -184,9 +182,6 @@ createAssetReport
 createAssetReport pd atokens dr =
   plaidRequest "/asset_report/create" pd.env
     (Just $ json $ encodeJson $ caReqBody pd.client_id pd.secret atokens dr)
-
--- | Token obtained from creating an asset report
-type AssetReportToken = String
 
 data RefAssetReportReqBody = RefAssetReportReqBody
   { days_requested :: Int
