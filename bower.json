@@ -1,6 +1,10 @@
 {
   "name": "purescript-plaid-node",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/piq9117/purescript-plaid-node"
+  },
   "ignore": [
     "**/.*",
     "node_modules",
