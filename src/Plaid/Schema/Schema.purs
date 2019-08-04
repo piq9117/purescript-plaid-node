@@ -57,8 +57,8 @@ categorySchema =
   }
 
 type LinkSchema =
-  { linkPublicTokenExchange :: String
-  , linkPublicTokenCreate :: String
+  { exchangeToken :: String
+  , createToken :: String
   }
 
 type ReportManagementSchema =

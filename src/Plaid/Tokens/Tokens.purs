@@ -14,7 +14,7 @@ import Effect.Aff (Aff)
 import Foreign.Object (empty, insert)
 import Plaid (plaidRequest)
 import Prelude (($), (<<<))
-import Plaid.Types
+import Plaid.Types (AccessToken, PlaidClient, PublicToken)
 import Plaid.Schema
 
 -- | exchanges `public_token` for an API `access_token`.
