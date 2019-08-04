@@ -15,6 +15,7 @@ import Foreign.Object (empty, insert)
 import Plaid (plaidRequest)
 import Prelude (($), (<<<))
 import Plaid.Types
+import Plaid.Schema
 
 -- | exchanges `public_token` for an API `access_token`.
 exchangePublicToken
@@ -22,7 +23,7 @@ exchangePublicToken
   -> PublicToken
   -> Aff (Response (Either ResponseFormatError Json))
 exchangePublicToken pd public_token =
-  plaidRequest "/item/public_token/exchange" pd.env reqBody
+  plaidRequest linkSchema.exchangeToken pd.env reqBody
   where reqBody = Just <<< json $
           encodeJson <<<
           insert "secret" pd.secret <<<
@@ -35,7 +36,7 @@ createPublicToken
   -> AccessToken
   -> Aff (Response (Either ResponseFormatError Json))
 createPublicToken pd accessToken =
-  plaidRequest "/item/public_token/create" pd.env reqBody
+  plaidRequest linkSchema.createToken pd.env reqBody
   where
     reqBody = Just <<< json $ encodeJson <<<
               insert "client_id" pd.client_id <<<

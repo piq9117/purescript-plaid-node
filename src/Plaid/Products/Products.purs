@@ -24,7 +24,8 @@ import Data.Maybe (Maybe(..))
 import Effect.Aff (Aff)
 import Plaid (plaidRequest)
 import Plaid.Types (PlaidClient, AccessToken, StartDate, EndDate, AssetReportToken, DaysRequested)
-import Prelude (($), identity)
+import Prelude (($), identity, (<<<))
+import Plaid.Schema
 
 newtype ReqBody = ReqBody
   { client_id :: String
@@ -57,7 +58,7 @@ getAuth
   -> AccessToken
   -> Aff (Response (Either ResponseFormatError Json))
 getAuth pd aToken =
-  plaidRequest "/auth/get" pd.env
+  plaidRequest productAccessSchema.getAuth pd.env
    (Just $ json $ encodeJson $ reqBody pd.client_id pd.secret aToken)
 
 newtype TransReqBody = TransReqBody
@@ -76,9 +77,6 @@ instance encodeTransReqBody :: EncodeJson TransReqBody where
     ~> "start_date" := req.start_date
     ~> "end_date" := req.end_date
     ~> jsonEmptyObject
-
--- formatDate :: DateTime -> Either String String
--- formatDate = formatDateTime "YYYY-MM-DD"
 
 transReqBody
   :: PlaidClient
@@ -107,7 +105,7 @@ getTransactions
   -> EndDate
   -> Aff (Response (Either ResponseFormatError Json))
 getTransactions pd aToken sDate eDate =
-  plaidRequest "/transactions/get" pd.env
+  plaidRequest productAccessSchema.getTransactions pd.env
    (Just $ json $ encodeJson $ transReqBody pd aToken sDate eDate)
 
 -- | Retrieve Balance Requests
@@ -118,7 +116,7 @@ getBalance
   -> AccessToken
   -> Aff (Response (Either ResponseFormatError Json))
 getBalance pd atoken =
-  plaidRequest "/accounts/balance/get" pd.env
+  plaidRequest productAccessSchema.getBalance pd.env
     (Just $ json $ encodeJson $ reqBody pd.client_id pd.secret atoken)
 
 -- | Retrieve Identity Request
@@ -129,7 +127,7 @@ getIdentity
   -> AccessToken
   -> Aff (Response (Either ResponseFormatError Json))
 getIdentity pd atoken =
-  plaidRequest "/identity/get" pd.env
+  plaidRequest productAccessSchema.getIdentity pd.env
     (Just $ json $ encodeJson $ reqBody pd.client_id pd.secret atoken)
 
 -- | Retrieve Income Request
@@ -141,8 +139,8 @@ getIncome
   -> AccessToken
   -> Aff (Response (Either ResponseFormatError Json))
 getIncome pd atoken =
-  plaidRequest "/income/get" pd.env
-    (Just $ json $ encodeJson $ reqBody pd.client_id pd.secret atoken)
+  plaidRequest productAccessSchema.getIncome pd.env
+    (Just <<< json <<< encodeJson $ reqBody pd.client_id pd.secret atoken)
 
 data CreateAssetReportReqBody = CreateAssetReportReqBody
   { client_id :: String
@@ -180,8 +178,8 @@ createAssetReport
   -> DaysRequested
   -> Aff (Response (Either ResponseFormatError Json))
 createAssetReport pd atokens dr =
-  plaidRequest "/asset_report/create" pd.env
-    (Just $ json $ encodeJson $ caReqBody pd.client_id pd.secret atokens dr)
+  plaidRequest productAccessSchema.getAssetReport pd.env
+    (Just <<< json <<< encodeJson $ caReqBody pd.client_id pd.secret atokens dr)
 
 data RefAssetReportReqBody = RefAssetReportReqBody
   { days_requested :: Int
@@ -221,7 +219,7 @@ refreshAssetReport
   -> DaysRequested
   -> Aff (Response (Either ResponseFormatError Json))
 refreshAssetReport pd art dr =
-  plaidRequest "/asset_report/refresh" pd.env
+  plaidRequest productAccessSchema.refreshAssetReport pd.env
     (Just $ json $ encodeJson $ refAsstReqBody pd art dr)
 
 data FilterAssetReqBody = FilterAssetReqBody
@@ -260,7 +258,7 @@ filterAssetReport
   -> Array AccountToExclude
   -> Aff (Response (Either ResponseFormatError Json))
 filterAssetReport pd art act =
-  plaidRequest "/asset_report/filter" pd.env
+  plaidRequest productAccessSchema.filterAssetReport pd.env
     (Just $ json $ encodeJson $ filtAsstReqBody pd art act)
 
 data GetAssetReportReqBody = GetAssetReportReqBody
@@ -293,7 +291,7 @@ getAssetReport
   -> AssetReportToken
   -> Aff (Response (Either ResponseFormatError Json))
 getAssetReport pd art =
-  plaidRequest "/asset_report/get" pd.env
+  plaidRequest productAccessSchema.getAssetReport pd.env
   (Just $ json $ encodeJson $ getAsstReqBody pd art)
 
 getAssetPdfReport
@@ -301,5 +299,5 @@ getAssetPdfReport
   -> AssetReportToken
   -> Aff (Response (Either ResponseFormatError Json))
 getAssetPdfReport pd art =
-  plaidRequest "/asset_report/pdf/get" pd.env
+  plaidRequest productAccessSchema.getPdfAssetReport pd.env
   (Just $ json $ encodeJson $ getAsstReqBody pd art)

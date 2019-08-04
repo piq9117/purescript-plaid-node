@@ -12,6 +12,7 @@ import Foreign.Object (empty, insert)
 import Plaid (plaidRequest)
 import Plaid.Types (AccessToken, WebHook, PlaidClient)
 import Prelude ((<<<), ($))
+import Plaid.Schema
 
 -- | Pull the accounts associated with the Item.
 getAccounts
@@ -19,7 +20,7 @@ getAccounts
   -> AccessToken
   -> Aff (Response (Either ResponseFormatError Json))
 getAccounts pd accessToken =
-  plaidRequest "/accounts/get" pd.env reqBody
+  plaidRequest itemManagementSchema.getAccounts pd.env reqBody
   where reqBody =
           Just <<< json $ encodeJson <<<
           insert "secret" pd.secret <<<
@@ -29,7 +30,7 @@ getAccounts pd accessToken =
 -- | Pull the information about the Item.
 getItem :: PlaidClient -> AccessToken -> Aff (Response (Either ResponseFormatError Json))
 getItem pd accessToken =
-  plaidRequest "/item/get" pd.env reqBody
+  plaidRequest itemManagementSchema.getItem pd.env reqBody
   where reqBody =
           Just <<< json $ encodeJson <<<
           insert "secret" pd.secret <<<
@@ -43,7 +44,7 @@ updateWebHook
   -> WebHook
   -> Aff (Response (Either ResponseFormatError Json))
 updateWebHook pd accessToken webhook =
-  plaidRequest "/item/webhook/update" pd.env reqBody
+  plaidRequest itemManagementSchema.updateWebhook pd.env reqBody
   where reqBody =
           Just <<< json $ encodeJson <<<
           insert "secret" pd.secret <<<
@@ -62,7 +63,7 @@ invalidateAccesToken
   -> AccessToken
   -> Aff (Response (Either ResponseFormatError Json))
 invalidateAccesToken pd accessToken =
-  plaidRequest "/item/access_token/invalidate" pd.env reqBody
+  plaidRequest itemManagementSchema.invalidateToken pd.env reqBody
   where reqBody =
           Just <<< json $ encodeJson <<<
           insert "client_id" pd.client_id <<<
@@ -78,7 +79,7 @@ removeItem
   -> AccessToken
   -> Aff (Response (Either ResponseFormatError Json))
 removeItem pd accessToken =
-  plaidRequest "/item/remove" pd.env reqBody
+  plaidRequest itemManagementSchema.removeItem pd.env reqBody
   where reqBody =
           Just <<< json $ encodeJson <<<
           insert "client_id" pd.client_id <<<
